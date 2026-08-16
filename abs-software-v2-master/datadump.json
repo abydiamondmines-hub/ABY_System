@@ -1,0 +1,186 @@
+[
+{
+    "model": "category.usercategory",
+    "pk": 1,
+    "fields": {
+        "name": "Safety Officer"
+    }
+},
+{
+    "model": "category.usercategory",
+    "pk": 2,
+    "fields": {
+        "name": "Customer Relations"
+    }
+},
+{
+    "model": "category.usercategory",
+    "pk": 3,
+    "fields": {
+        "name": "IT Support"
+    }
+},
+{
+    "model": "category.usercategory",
+    "pk": 4,
+    "fields": {
+        "name": "Operations Lead"
+    }
+},
+{
+    "model": "sessions.session",
+    "pk": "663u0o054oj56cqktx6zoefie5efd2mf",
+    "fields": {
+        "session_data": ".eJxVjMsOwiAQRf-FtSEwFDq4dO83kGGYStXQpI-V8d-1SRe6veec-1KJtrWmbZE5jUWdFajT75aJH9J2UO7UbpPmqa3zmPWu6IMu-joVeV4O9--g0lK_dQcxIOdSBpLMRoINMJieogWbmanrc0QUdIMP1hKhd4xijPPQAXlQ7w_5MjfE:1uyrFg:ZhwDxlZI69K-6teLDvZzgTKAsYX1IKAExGZiOMi_XhA",
+        "expire_date": "2025-10-01T12:27:12.919Z"
+    }
+},
+{
+    "model": "sites.site",
+    "fields": {
+        "domain": "example.com",
+        "name": "example.com"
+    }
+},
+{
+    "model": "users.customuser",
+    "fields": {
+        "password": "pbkdf2_sha256$1000000$v8NuuW9k3jWc1b54bSLOlT$RV2ywi/GsGfTAhm6sUIWxpmgJXXitvK6UZ557E6+XoQ=",
+        "last_login": "2025-09-17T12:27:12.904Z",
+        "is_superuser": true,
+        "username": "pepsi",
+        "first_name": "",
+        "last_name": "",
+        "is_staff": true,
+        "is_active": true,
+        "date_joined": "2025-09-17T12:26:14.192Z",
+        "email": "hivalnetwork@gmail.com",
+        "phone_number": null,
+        "role": null,
+        "department": null,
+        "created_at": "2025-09-17T12:26:17.744Z",
+        "updated_at": "2026-05-03T17:10:10.668Z",
+        "mfa_enabled": false,
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "users.customuser",
+    "fields": {
+        "password": "pbkdf2_sha256$1000000$c2CqN1WNqnNDCHfL3yOFuf$+JXdse9Zkv5OsKmFRg/f8B997b4X0QB1dJzBxcLi2sY=",
+        "last_login": null,
+        "is_superuser": false,
+        "username": "joejoe",
+        "first_name": "",
+        "last_name": "",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2026-05-03T17:12:10.260Z",
+        "email": "joejoe@gmail.com",
+        "phone_number": "80899",
+        "role": 1,
+        "department": "lastma",
+        "created_at": "2026-05-03T17:12:10.864Z",
+        "updated_at": "2026-05-03T17:12:10.864Z",
+        "mfa_enabled": false,
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "users.role",
+    "pk": 1,
+    "fields": {
+        "name": "Equipment Staff",
+        "description": null,
+        "permissions": []
+    }
+},
+{
+    "model": "users.role",
+    "pk": 2,
+    "fields": {
+        "name": "Safety Staff",
+        "description": null,
+        "permissions": []
+    }
+},
+{
+    "model": "users.role",
+    "pk": 3,
+    "fields": {
+        "name": "Project Staff",
+        "description": null,
+        "permissions": []
+    }
+},
+{
+    "model": "users.role",
+    "pk": 4,
+    "fields": {
+        "name": "Inventory Staff",
+        "description": null,
+        "permissions": []
+    }
+},
+{
+    "model": "users.role",
+    "pk": 5,
+    "fields": {
+        "name": "Financial Staff",
+        "description": null,
+        "permissions": []
+    }
+},
+{
+    "model": "equipment.equipment",
+    "pk": 1,
+    "fields": {
+        "equipment_name": "Drill Machine",
+        "equipment_type": "Power Tools",
+        "serial_number": "DRL-001",
+        "purchase_date": "2023-06-15",
+        "purchase_cost": "15000.00",
+        "status": "active",
+        "assigned_to": null,
+        "created_by": null,
+        "created_at": "2025-10-03T06:50:33.132Z",
+        "updated_at": "2025-10-03T06:50:33.132Z"
+    }
+},
+{
+    "model": "operations.operationrecord",
+    "pk": 1,
+    "fields": {
+        "equipment": null,
+        "operator": null,
+        "date": "2026-05-03",
+        "hours_used": "0.00",
+        "activity": null,
+        "description": "Landing",
+        "income": "300.00",
+        "expenditure": "20.00",
+        "rate": "20.00",
+        "timestamp": "2026-05-03T17:59:09.161Z",
+        "status": "completed",
+        "created_by": null
+    }
+},
+{
+    "model": "safety.safetyincident",
+    "pk": 1,
+    "fields": {
+        "incident_date": "2026-05-03",
+        "project": "General",
+        "location": null,
+        "description": "light rain",
+        "severity": "low",
+        "actions_taken": "enter room",
+        "incident_status": "reported",
+        "reported_by": null,
+        "created_at": "2026-05-03T07:26:13.178Z",
+        "updated_at": "2026-05-03T07:26:13.178Z"
+    }
+}
+]
