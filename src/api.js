@@ -1,7 +1,12 @@
 import axios from "axios";
 
 // 1️⃣ DEFINE BASE URL
-let BASE_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
+let BASE_URL = (import.meta.env.VITE_API_URL || "http://127.0.0.1:8000").trim();
+
+// Ensure protocol is present (default to https:// if missing, unless localhost)
+if (!BASE_URL.startsWith("http://") && !BASE_URL.startsWith("https://")) {
+  BASE_URL = `https://${BASE_URL}`;
+}
 
 // Ensure clean URL (no trailing slash)
 if (BASE_URL.endsWith("/")) {
