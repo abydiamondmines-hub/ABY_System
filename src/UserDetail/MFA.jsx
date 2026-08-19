@@ -37,14 +37,18 @@ const Mfa = () => {
         otp_code: code
       });
 
-      const { access, refresh, user } = res.data;
+      const access = res.data?.access;
+      const refresh = res.data?.refresh;
+      const user = res.data?.user || {};
 
-      localStorage.setItem("access_token", access);
-      localStorage.setItem("user", JSON.stringify(user));
-      localStorage.setItem("refresh_token", refresh);
+      if (access) localStorage.setItem("access_token", access);
+      if (refresh) localStorage.setItem("refresh_token", refresh);
+      if (res.data?.user) {
+        localStorage.setItem("user", JSON.stringify(res.data.user));
+      }
 
       // Determine redirect URL dynamically based on permissions sent from backend
-      const redirectUrl = user.default_redirect || "/dashboard";
+      const redirectUrl = user?.default_redirect || "/dashboard";
 
       navigate(redirectUrl);
     } catch (err) {
