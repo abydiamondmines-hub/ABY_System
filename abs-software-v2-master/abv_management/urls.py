@@ -2,10 +2,8 @@ from django.contrib import admin
 from django.urls import path, include
 from django.contrib.auth import views as auth_views
 
-from users.views import SignupView, LoginView
 from dashboard.views import DashboardSummary
-
-from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from rest_framework_simplejwt.views import TokenRefreshView
 from accounts.views import (
     CustomTokenObtainPairView, VerifyOTPView, ResendOTPView, 
     PasswordResetRequestView, PasswordResetConfirmView, ChangePasswordView
@@ -30,21 +28,17 @@ schema_view = get_schema_view(
 urlpatterns = [
     path('admin/', admin.site.urls),
 
-    # Auth endpoints
-    #path('api/auth/login/', LoginView.as_view(), name='login'),
-    #path('api/auth/', include('users.urls')),  # ✅ now login is at /api/auth/login/
+    # Swagger / OpenAPI documentation
+    path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
+    path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
 
-    path('signup/', SignupView.as_view(), name='signup'),
-    #path('login/', LoginView.as_view(), name='login'),
-    path('password-reset/', auth_views.PasswordResetView.as_view(), name='password_reset'),
-
-    # JWT endpoints
+    # JWT Authentication Endpoints
     path('api/auth/login/', CustomTokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/auth/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('api/auth/verify-otp/', VerifyOTPView.as_view(), name='verify_otp'),
     path('api/auth/resend-otp/', ResendOTPView.as_view(), name='resend_otp'),
 
-    # Password Reset
+    # Password Reset Endpoints
     path('api/auth/password-reset-request/', PasswordResetRequestView.as_view(), name='password_reset_request'),
     path('api/auth/password-reset-confirm/<uidb64>/<token>/', PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
     path('api/auth/change-password/', ChangePasswordView.as_view(), name='change_password'),

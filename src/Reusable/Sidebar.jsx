@@ -34,13 +34,12 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, user, roles, appP
 
     const hasAccess = (itemApp) => {
         if (!user) return false;
-        if (user.superuser || user.is_superuser) return true;
+        const isSuperuser = Boolean(user.superuser || user.is_superuser || user.is_staff);
+        const roleName = userRole?.name?.toLowerCase() || (typeof user?.role === 'string' ? user.role.toLowerCase() : '');
+        const isAdmin = isSuperuser || roleName.includes('admin');
 
-        const roleName = userRole?.name?.toLowerCase() || '';
-        const isAdmin = roleName.includes('admin');
-
-        // Restore isAdmin permissions bypass, EXCEPT for 'users' (User Management)
-        if (isAdmin && itemApp !== 'users') return true;
+        // Superusers and Admins have global access to all sidebar links
+        if (isAdmin || isSuperuser) return true;
 
         const allPerms = Object.values(appPermissions).flat();
 

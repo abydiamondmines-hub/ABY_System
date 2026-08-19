@@ -6,7 +6,14 @@ import api from "../api";
 
 export default function Layout() {
     const [sidebarOpen, setSidebarOpen] = useState(true);
-    const [user, setUser] = useState(null);
+    const [user, setUser] = useState(() => {
+        try {
+            const saved = localStorage.getItem("user");
+            return saved ? JSON.parse(saved) : null;
+        } catch {
+            return null;
+        }
+    });
     const [roles, setRoles] = useState([]);
     const [appPermissions, setAppPermissions] = useState({});
     const [loadingAuth, setLoadingAuth] = useState(true);
@@ -15,16 +22,27 @@ export default function Layout() {
         const fetchAuthData = async () => {
             setLoadingAuth(true);
             try {
+                // 1. Fetch current user independently
+                const userRes = await api.get("/users/me/").catch(err => {
+                    console.warn("Could not fetch /users/me/, relying on cached session:", err);
+                    return null;
+                });
+
+                if (userRes?.data) {
+                    setUser(userRes.data);
+                    try {
+                        localStorage.setItem("user", JSON.stringify(userRes.data));
+                    } catch {}
+                }
+
+                // 2. Fetch roles and permissions
                 const apps = ['users', 'projects', 'equipment', 'inventory', 'safety', 'production'];
-                const [userRes, rolesRes, ...permsResList] = await Promise.all([
-                    api.get("/users/me/"),
-                    api.get("/users/roles/"),
+                const [rolesRes, ...permsResList] = await Promise.all([
+                    api.get("/users/roles/").catch(() => ({ data: [] })),
                     ...apps.map(app => api.get(`/users/permissions/${app}/`).catch(() => ({ data: [] })))
                 ]);
 
-                setUser(userRes.data);
-                
-                const rolesData = Array.isArray(rolesRes.data) ? rolesRes.data : (rolesRes.data.results || []);
+                const rolesData = Array.isArray(rolesRes?.data) ? rolesRes.data : (rolesRes?.data?.results || []);
                 setRoles(rolesData.map(r => {
                     const rawPerms1 = r.role_permissions || [];
                     const rawPerms2 = r.rolemodulepermissions || [];

@@ -16,9 +16,9 @@ export default function Unauthorized() {
         const userRoleId = typeof user?.role === 'object' ? user?.role?.id : user?.role;
         const userRole = roles?.find(r => r.id === userRoleId);
         const userPermIds = userRole?.permissions || [];
-        const isSuperuser = user.superuser || user.is_superuser;
-        const roleName = userRole?.name?.toLowerCase() || '';
-        const isAdmin = roleName.includes('admin');
+        const isSuperuser = Boolean(user.superuser || user.is_superuser || user.is_staff);
+        const roleName = userRole?.name?.toLowerCase() || (typeof user?.role === 'string' ? user.role.toLowerCase() : '');
+        const isAdmin = isSuperuser || roleName.includes('admin');
 
         // Check each app in order of standard navigation priority
         const order = [
@@ -32,11 +32,7 @@ export default function Unauthorized() {
         ];
 
         for (const item of order) {
-            if (isSuperuser) {
-                navigate(item.path);
-                return;
-            }
-            if (isAdmin && item.app !== 'users') {
+            if (isSuperuser || isAdmin) {
                 navigate(item.path);
                 return;
             }
