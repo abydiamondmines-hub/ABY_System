@@ -157,12 +157,21 @@ class CurrentUserView(APIView):
 
     def get(self, request):
         user = request.user
+        role_data = None
+        if hasattr(user, 'role') and user.role:
+            role_data = {
+                "id": user.role.id,
+                "name": user.role.name,
+                "default_route": getattr(user.role, 'default_route', '/dashboard') or '/dashboard'
+            }
         return Response({
             "id": user.id,
             "username": user.username,
             "email": user.email,
-            "role": getattr(user.role, 'id', None) if getattr(user, 'role', None) else None,
-            "is_superuser": user.is_superuser
+            "role": role_data if role_data else (getattr(user.role, 'id', None) if getattr(user, 'role', None) else None),
+            "is_superuser": user.is_superuser,
+            "is_staff": user.is_staff,
+            "default_redirect": getattr(user.role, 'default_route', '/dashboard') if hasattr(user, 'role') and user.role else '/dashboard'
         })
 
 # ────────────────────────────────────────────────────────────────

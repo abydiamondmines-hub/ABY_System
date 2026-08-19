@@ -69,4 +69,15 @@ class Command(BaseCommand):
                 f"✓ {action} role: '{role.name}' -> Default Route: '{role.default_route}' ({role.permissions.count()} permissions)"
             ))
 
+        # Automatically assign Administrator role to existing superusers without a role
+        try:
+            admin_role = Role.objects.get(name="Administrator")
+            from users.models import CustomUser
+            for user in CustomUser.objects.filter(is_superuser=True, role__isnull=True):
+                user.role = admin_role
+                user.save()
+                self.stdout.write(self.style.SUCCESS(f"✓ Assigned Administrator role to superuser: {user.email}"))
+        except Exception as e:
+            self.stdout.write(self.style.WARNING(f"Superuser role assignment note: {e}"))
+
         self.stdout.write(self.style.SUCCESS("All default strict roles successfully initialized!"))
