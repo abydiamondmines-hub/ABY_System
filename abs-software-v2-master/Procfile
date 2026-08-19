@@ -1,1 +1,1 @@
-web: gunicorn abv_management.wsgi
+web: python manage.py migrate --noinput && python manage.py collectstatic --noinput && gunicorn abv_management.wsgi --bind 0.0.0.0:$PORT

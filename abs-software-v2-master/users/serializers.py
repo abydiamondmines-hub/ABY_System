@@ -19,7 +19,7 @@ class RoleSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Role
-        fields = ['id', 'name', 'description', 'permissions']
+        fields = ['id', 'name', 'description', 'default_route', 'permissions']
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)

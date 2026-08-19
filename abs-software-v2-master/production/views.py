@@ -1,19 +1,21 @@
 from rest_framework import viewsets, views, response
-from rest_framework.permissions import IsAuthenticated
 from .models import DailyProduction
 from operations.models import OperationRecord, MaintenanceRecord
 from .serializers import DailyProductionSerializer, OperationRecordSerializer, MaintenanceRecordSerializer
 from django.db.models import Sum
+from users.permissions import HasModulePermission
 
 class DailyProductionViewSet(viewsets.ModelViewSet):
     queryset = DailyProduction.objects.all().order_by('-date', '-id')
     serializer_class = DailyProductionSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [HasModulePermission]
+    required_app = 'production'
 
 class OperationRecordViewSet(viewsets.ModelViewSet):
     queryset = OperationRecord.objects.all().order_by('-date', '-id')
     serializer_class = OperationRecordSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [HasModulePermission]
+    required_app = 'operations'
 
     def perform_create(self, serializer):
         serializer.save(created_by=self.request.user)
@@ -21,13 +23,15 @@ class OperationRecordViewSet(viewsets.ModelViewSet):
 class MaintenanceRecordViewSet(viewsets.ModelViewSet):
     queryset = MaintenanceRecord.objects.all().order_by('-date', '-id')
     serializer_class = MaintenanceRecordSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [HasModulePermission]
+    required_app = 'operations'
 
     def perform_create(self, serializer):
         serializer.save(created_by=self.request.user)
 
 class OperationSummaryView(views.APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [HasModulePermission]
+    required_app = 'operations'
     def get(self, request):
         total_operations = OperationRecord.objects.count()
         total_hours = OperationRecord.objects.aggregate(total=Sum('hours_used'))['total'] or 0
@@ -53,7 +57,8 @@ class OperationSummaryView(views.APIView):
         })
 
 class MaintenanceSummaryView(views.APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [HasModulePermission]
+    required_app = 'operations'
     def get(self, request):
         total_maintenance = MaintenanceRecord.objects.count()
         completed = MaintenanceRecord.objects.filter(status='completed').count()

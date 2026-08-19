@@ -115,9 +115,17 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:5173",
     "https://abs-software-v2-1.onrender.com",
     "https://cheer-papaya-viability.ngrok-free.dev", # Your actual backend tunnel
+    "https://positive-curiosity-production-d2d7.up.railway.app", # Railway frontend
 ]
- # Allow all origins (only for development)
- 
+
+if os.getenv('CORS_ALLOWED_ORIGINS'):
+    CORS_ALLOWED_ORIGINS.extend([origin.strip() for origin in os.getenv('CORS_ALLOWED_ORIGINS').split(',') if origin.strip()])
+
+CORS_ALLOWED_ORIGIN_REGEXES = [
+    r"^https://.*\.railway\.app$",
+    r"^https://.*\.up\.railway\.app$",
+]
+
 CORS_ALLOW_CREDENTIALS = True
 
 from corsheaders.defaults import default_headers
@@ -128,7 +136,14 @@ CORS_ALLOW_HEADERS = list(default_headers) + [
 CSRF_TRUSTED_ORIGINS = [
     'https://aby-sigma.vercel.app',
     'https://cheer-papaya-viability.ngrok-free.dev',
+    'https://positive-curiosity-production-d2d7.up.railway.app', # Railway frontend
+    'https://*.railway.app',
+    'https://*.up.railway.app',
 ]
+
+if os.getenv('CSRF_TRUSTED_ORIGINS'):
+    CSRF_TRUSTED_ORIGINS.extend([origin.strip() for origin in os.getenv('CSRF_TRUSTED_ORIGINS').split(',') if origin.strip()])
+
 
 
 ROOT_URLCONF = 'abv_management.urls'

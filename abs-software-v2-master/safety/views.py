@@ -5,19 +5,23 @@ from .models import SafetyIncident, RiskAssessment
 from .serializers import SafetyIncidentSerializer, RiskAssessmentSerializer
 from django.utils import timezone
 from datetime import timedelta
+from users.permissions import HasModulePermission
 
 class SafetyIncidentViewSet(viewsets.ModelViewSet):
     queryset = SafetyIncident.objects.all().order_by('-incident_date', '-id')
     serializer_class = SafetyIncidentSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [HasModulePermission]
+    required_app = 'safety'
 
 class RiskAssessmentViewSet(viewsets.ModelViewSet):
     queryset = RiskAssessment.objects.all().order_by('-assessment_date', '-id')
     serializer_class = RiskAssessmentSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [HasModulePermission]
+    required_app = 'safety'
 
 class SafetyIncidentStatsView(views.APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [HasModulePermission]
+    required_app = 'safety'
 
     def get(self, request):
         thirty_days_ago = timezone.now().date() - timedelta(days=30)

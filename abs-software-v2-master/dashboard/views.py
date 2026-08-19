@@ -19,10 +19,12 @@ from users.models import Employee
 from django.db.models.functions import TruncDay, TruncMonth, TruncYear
 
 
+from users.permissions import HasDashboardAccess
+
 User = get_user_model()
 
 class DashboardSummary(APIView):
-    permission_classes = [IsAdminUser]
+    permission_classes = [HasDashboardAccess]
 
     def get(self, request):
         return Response({
@@ -40,7 +42,7 @@ class DashboardSummary(APIView):
             "maintenance_records": MaintenanceRecord.objects.count()
         })
 class OperationalSummary(APIView):
-    permission_classes = [IsAdminUser]
+    permission_classes = [HasDashboardAccess]
 
     def get(self, request):
         daily = OperationRecord.objects.annotate(day=TruncDay('date')) \
@@ -64,7 +66,7 @@ class OperationalSummary(APIView):
             "yearly": list(yearly)
         })
 class MaintenanceSummary(APIView):
-    permission_classes = [IsAdminUser]
+    permission_classes = [HasDashboardAccess]
 
     def get(self, request):
         daily = MaintenanceRecord.objects.annotate(day=TruncDay('date')) \
@@ -239,7 +241,7 @@ class RecentActivityFeed(APIView):
         return Response(activities[:20])
     
 class FinancialSummary(APIView):
-    permission_classes = [IsAdminUser]
+    permission_classes = [HasDashboardAccess]
 
     def get(self, request):
         revenue = FinanceRecord.objects.filter(type='revenue').aggregate(total=Sum('amount'))['total'] or 0

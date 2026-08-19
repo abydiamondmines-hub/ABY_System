@@ -55,17 +55,25 @@ class VerifyOTPView(APIView):
             if hasattr(user, 'role') and user.role:
                 role_data = {
                     "id": user.role.id,
-                    "name": user.role.name
+                    "name": user.role.name,
+                    "default_route": getattr(user.role, 'default_route', '/dashboard') or '/dashboard'
                 }
+                default_redirect = getattr(user.role, 'default_route', None) or "/dashboard"
         elif hasattr(user, 'role') and user.role:
             role_data = {
                 "id": user.role.id,
-                "name": user.role.name
+                "name": user.role.name,
+                "default_route": getattr(user.role, 'default_route', '/dashboard') or '/dashboard'
             }
             perms = user.role.permissions.all()
             has_dashboard_access = perms.filter(codename='view_dashboardaccess').exists()
             
-            if not has_dashboard_access:
+            # If role has a configured default_route, use it!
+            if getattr(user.role, 'default_route', None):
+                default_redirect = user.role.default_route
+            elif has_dashboard_access:
+                default_redirect = "/dashboard"
+            else:
                 # determine default redirect based on actual module permissions
                 codenames = [p.codename for p in perms]
                 app_labels = [p.content_type.app_label for p in perms]
@@ -78,6 +86,7 @@ class VerifyOTPView(APIView):
                 elif 'safety' in app_labels: default_redirect = '/safety'
                 elif 'inventory' in app_labels: default_redirect = '/inventory'
                 elif 'production' in app_labels: default_redirect = '/production'
+                elif 'operations' in app_labels: default_redirect = '/production'
                 else: default_redirect = '/unauthorized'
 
         return Response({

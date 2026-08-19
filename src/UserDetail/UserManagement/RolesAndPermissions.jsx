@@ -11,6 +11,7 @@ export default function RolesAndPermissions() {
   const [permissions, setPermissions] = useState([]);
   const [selectedRoleId, setSelectedRoleId] = useState(null);
   const [editedRolePermissions, setEditedRolePermissions] = useState([]); // IDs of permissions for selected role
+  const [editedDefaultRoute, setEditedDefaultRoute] = useState("/dashboard");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [expandedGroups, setExpandedGroups] = useState({}); // Track expanded accordions
@@ -71,6 +72,7 @@ export default function RolesAndPermissions() {
             ...r,
             id: r.id ?? r.key,
             name: r.name ?? r.label,
+            default_route: r.default_route || '/dashboard',
             permissions: parsedPermIds
           };
         });
@@ -115,12 +117,21 @@ export default function RolesAndPermissions() {
         return p;
       });
       setEditedRolePermissions(permIds.filter(id => id != null).map(Number));
+      if (data.default_route) {
+        setEditedDefaultRoute(data.default_route);
+      } else {
+        const fallbackRole = currentRoles.find(r => r.id === roleId);
+        setEditedDefaultRoute(fallbackRole?.default_route || "/dashboard");
+      }
     } catch (error) {
       console.error(`Failed to fetch permissions for role ${roleId} (likely backend 404). Falling back to cached list.`, error);
       // Fallback: if the detailed route fails, grab from the main list so we don't end up empty
       const fallbackRole = currentRoles.find(r => r.id === roleId);
       if (fallbackRole && fallbackRole.permissions) {
         setEditedRolePermissions(fallbackRole.permissions);
+      }
+      if (fallbackRole && fallbackRole.default_route) {
+        setEditedDefaultRoute(fallbackRole.default_route);
       }
     }
   };
@@ -182,34 +193,17 @@ export default function RolesAndPermissions() {
       const visiblePermIds = new Set(permissions.map(p => Number(p.id)));
       const cleanPermissionsPayload = editedRolePermissions.filter(id => visiblePermIds.has(Number(id)));
 
-      const formattedPermissions = cleanPermissionsPayload.map(permId => {
-        const fullPerm = permissions.find(p => p.id === permId);
-        
-        // Derive access_level from codename (e.g., 'change_user' -> 'edit')
-        let accessLevel = "view";
-        if (fullPerm && fullPerm.codename) {
-          const prefix = fullPerm.codename.split('_')[0];
-          if (prefix === 'change') accessLevel = 'edit';
-          else if (['add', 'delete', 'view'].includes(prefix)) accessLevel = prefix;
-        }
-
-        return {
-          permission: permId, // The ID of the permission
-          access_level: accessLevel, 
-          module: fullPerm ? fullPerm.moduleName : 'admin_only' // Safe fallback
-        };
-      });
-
       const payload = {
         name: role.name, // Keep existing name
+        default_route: editedDefaultRoute,
         permissions: cleanPermissionsPayload // Send list of IDs to match backend ManyToMany field
       };
-      // PUT /api/users/roles/<id>/update/
+      // PUT /api/users/roles/<id>/
       await api.put(`/users/roles/${targetId}/`, payload);
 
       // Optimistically update the roles cache so the fallback works if GET 404s
       const updatedRoles = roles.map(r =>
-        r.id === targetId ? { ...r, permissions: cleanPermissionsPayload } : r
+        r.id === targetId ? { ...r, default_route: editedDefaultRoute, permissions: cleanPermissionsPayload } : r
       );
       setRoles(updatedRoles);
 
@@ -342,7 +336,7 @@ Please show this EXACT alert to your backend partner. If they built "update/", t
       <div className="flex-1 flex flex-col min-h-[400px]">
 
         {/* Header */}
-        <div className="p-4 border-b border-gray-100 flex justify-between items-center bg-white sticky top-0 z-10">
+        <div className="p-4 border-b border-gray-100 flex flex-wrap gap-4 justify-between items-center bg-white sticky top-0 z-10">
           <div>
             <h2 className="text-base font-bold text-gray-900">
               Editing: <span className="text-blue-600">{roles.find(r => r.id === selectedRoleId)?.name}</span>
@@ -351,6 +345,25 @@ Please show this EXACT alert to your backend partner. If they built "update/", t
               {editedRolePermissions.length} permissions enabled
             </p>
           </div>
+
+          {/* Default Landing Route Selector */}
+          <div className="flex items-center gap-2">
+            <label className="text-xs font-semibold text-gray-700 whitespace-nowrap">Default Route:</label>
+            <select
+              value={editedDefaultRoute}
+              onChange={(e) => setEditedDefaultRoute(e.target.value)}
+              className="text-xs border border-gray-300 rounded-lg px-2.5 py-1.5 bg-white text-gray-800 font-medium focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none shadow-sm cursor-pointer"
+            >
+              <option value="/dashboard">Admin Dashboard (/dashboard)</option>
+              <option value="/equipment">Equipment Management (/equipment)</option>
+              <option value="/project">Project Management (/project)</option>
+              <option value="/safety">Safety Management (/safety)</option>
+              <option value="/inventory">Inventory Management (/inventory)</option>
+              <option value="/production">Production (/production)</option>
+              <option value="/users">User Management (/users)</option>
+            </select>
+          </div>
+
           <div className="flex gap-2">
             <button
               onClick={handleReset}

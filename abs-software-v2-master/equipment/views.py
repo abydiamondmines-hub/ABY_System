@@ -3,12 +3,13 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from .models import Equipment
 from .serializers import EquipmentSerializer
-from rest_framework.permissions import IsAuthenticated
+from users.permissions import HasModulePermission
 
 class EquipmentListCreateView(generics.ListCreateAPIView):
     queryset = Equipment.objects.all()
     serializer_class = EquipmentSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [HasModulePermission]
+    required_app = 'equipment'
 
     def perform_create(self, serializer):
         serializer.save(created_by=self.request.user)
@@ -16,23 +17,27 @@ class EquipmentListCreateView(generics.ListCreateAPIView):
 class EquipmentUpdateView(generics.UpdateAPIView):
     queryset = Equipment.objects.all()
     serializer_class = EquipmentSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [HasModulePermission]
+    required_app = 'equipment'
     lookup_field = 'id'
 
 class EquipmentDeleteView(generics.DestroyAPIView):
     queryset = Equipment.objects.all()
     serializer_class = EquipmentSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [HasModulePermission]
+    required_app = 'equipment'
     lookup_field = 'id'
 
 class EquipmentDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Equipment.objects.all()
     serializer_class = EquipmentSerializer
     lookup_field = 'id'
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [HasModulePermission]
+    required_app = 'equipment'
 
 class EquipmentStatsView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [HasModulePermission]
+    required_app = 'equipment'
 
     def get(self, request):
         total = Equipment.objects.count()
