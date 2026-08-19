@@ -101,7 +101,11 @@ export default function RecentActivity() {
       try {
         const response = await api.get("/dashboard/activity/recent/");
 
-        const mappedActivities = response.data
+        const rawActivities = Array.isArray(response.data)
+          ? response.data
+          : (response.data?.results || []);
+
+        const mappedActivities = rawActivities
           .map(item => {
             const actionStr = item.action ? (item.action.charAt(0).toUpperCase() + item.action.slice(1)) : '';
             let cleanUser = item.user ? item.user.trim() : "System";
