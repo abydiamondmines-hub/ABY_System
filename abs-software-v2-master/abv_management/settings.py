@@ -96,34 +96,35 @@ REST_FRAMEWORK = {
 SITE_ID = 1
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware', 
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'corsheaders.middleware.CorsMiddleware', 
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'allauth.account.middleware.AccountMiddleware',
-
 ]
 CORS_ALLOWED_ORIGINS = [
     'https://aby-sigma.vercel.app',
+    'http://aby-sigma.vercel.app',
     "http://localhost:3000",
     "http://localhost:5173",
     "http://127.0.0.1:5173",
     "https://abs-software-v2-1.onrender.com",
     "https://cheer-papaya-viability.ngrok-free.dev", # Your actual backend tunnel
     "https://positive-curiosity-production-d2d7.up.railway.app", # Railway frontend
+    "http://positive-curiosity-production-d2d7.up.railway.app", # Railway frontend
 ]
 
 if os.getenv('CORS_ALLOWED_ORIGINS'):
     CORS_ALLOWED_ORIGINS.extend([origin.strip() for origin in os.getenv('CORS_ALLOWED_ORIGINS').split(',') if origin.strip()])
 
 CORS_ALLOWED_ORIGIN_REGEXES = [
-    r"^https://.*\.railway\.app$",
-    r"^https://.*\.up\.railway\.app$",
+    r"^https?://.*\.railway\.app$",
+    r"^https?://.*\.up\.railway\.app$",
 ]
 
 CORS_ALLOW_CREDENTIALS = True
@@ -135,14 +136,23 @@ CORS_ALLOW_HEADERS = list(default_headers) + [
 
 CSRF_TRUSTED_ORIGINS = [
     'https://aby-sigma.vercel.app',
+    'http://aby-sigma.vercel.app',
     'https://cheer-papaya-viability.ngrok-free.dev',
     'https://positive-curiosity-production-d2d7.up.railway.app', # Railway frontend
+    'http://positive-curiosity-production-d2d7.up.railway.app', # Railway frontend
     'https://*.railway.app',
+    'http://*.railway.app',
     'https://*.up.railway.app',
+    'http://*.up.railway.app',
 ]
 
 if os.getenv('CSRF_TRUSTED_ORIGINS'):
     CSRF_TRUSTED_ORIGINS.extend([origin.strip() for origin in os.getenv('CSRF_TRUSTED_ORIGINS').split(',') if origin.strip()])
+
+# Secure proxy configuration for reverse proxies (like Railway)
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+USE_X_FORWARDED_HOST = True
+
 
 
 
