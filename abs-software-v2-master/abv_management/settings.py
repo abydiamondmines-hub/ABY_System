@@ -117,6 +117,10 @@ CORS_ALLOWED_ORIGINS = [
     "https://cheer-papaya-viability.ngrok-free.dev", # Your actual backend tunnel
     "https://positive-curiosity-production-d2d7.up.railway.app", # Railway frontend
     "http://positive-curiosity-production-d2d7.up.railway.app", # Railway frontend
+    "https://abydiamondmines.online", # Hostinger frontend
+    "http://abydiamondmines.online", # Hostinger frontend HTTP fallback
+    "https://www.abydiamondmines.online", # Hostinger frontend www
+    "http://www.abydiamondmines.online", # Hostinger frontend www HTTP fallback
 ]
 
 if os.getenv('CORS_ALLOWED_ORIGINS'):
@@ -125,6 +129,7 @@ if os.getenv('CORS_ALLOWED_ORIGINS'):
 CORS_ALLOWED_ORIGIN_REGEXES = [
     r"^https?://.*\.railway\.app$",
     r"^https?://.*\.up\.railway\.app$",
+    r"^https?://(.*\.)?abydiamondmines\.online$",
 ]
 
 CORS_ALLOW_CREDENTIALS = True
@@ -144,6 +149,10 @@ CSRF_TRUSTED_ORIGINS = [
     'http://*.railway.app',
     'https://*.up.railway.app',
     'http://*.up.railway.app',
+    'https://abydiamondmines.online', # Hostinger frontend
+    'http://abydiamondmines.online', # Hostinger frontend HTTP fallback
+    'https://*.abydiamondmines.online', # Hostinger frontend subdomains
+    'http://*.abydiamondmines.online', # Hostinger frontend subdomains HTTP fallback
 ]
 
 if os.getenv('CSRF_TRUSTED_ORIGINS'):
